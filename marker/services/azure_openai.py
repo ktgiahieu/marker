@@ -231,7 +231,7 @@ class AzureOpenAIService(BaseService):
                     print(f"Received content: {response_content}")
                     # Treat as failure for this attempt, maybe retry if appropriate
                     # Or break if JSON is consistently malformed
-                    block.update_metadata(llm_error="JSONDecodeError")
+                    # block.update_metadata(llm_error="JSONDecodeError")
                     tries += 1 # Count as a failed attempt
                     if tries >= current_max_retries: break # Don't retry if max retries reached
                     # No automatic retry here, could add a short sleep if desired
@@ -240,14 +240,14 @@ class AzureOpenAIService(BaseService):
                     print(f"Error: Response validation failed against schema '{response_schema.__name__}': {validation_err}")
                     print(f"Received content: {response_content}")
                     # Treat as failure, break the loop as the response structure is wrong
-                    block.update_metadata(llm_error="ValidationError")
+                    # block.update_metadata(llm_error="ValidationError")
                     break # Exit loop, validation failed
 
 
             # --- Handle Retriable Errors ---
             except (APITimeoutError, RateLimitError) as e:
                 tries += 1
-                block.update_metadata(llm_request_count=1, llm_error=type(e).__name__) # Record error type
+                # block.update_metadata(llm_request_count=1, llm_error=type(e).__name__) # Record error type
                 if tries >= current_max_retries:
                     print(f"Error: Max retries ({current_max_retries}) reached after {type(e).__name__}. Aborting.")
                     break # Exit loop
@@ -266,7 +266,7 @@ class AzureOpenAIService(BaseService):
                 # Log the full traceback for detailed debugging if needed
                 # import traceback
                 # print(traceback.format_exc())
-                block.update_metadata(llm_request_count=1, llm_error=type(e).__name__)
+                # block.update_metadata(llm_request_count=1, llm_error=type(e).__name__)
                 break # Exit loop on unexpected/fatal error
 
         # --- Return Empty Dict if all retries fail or an unrecoverable error occurred ---
