@@ -242,7 +242,8 @@ class AzureOpenAIService(BaseService):
 
                 else:
                     json_messages = messages.copy()
-                    json_messages[0]["content"] = json_messages[0]["content"] + "\nReturn the output in JSON format:\n" + repr(response_schema)
+                    json_messages[0]["content"] = json_messages[0]["content"] + "\nReturn the output in JSON format:\n" + response_schema.get_description()
+
                     response = client.beta.chat.completions.parse(
                         model=self.azure_deployment_name, # Specify the deployment name
                         messages=json_messages,

@@ -91,3 +91,6 @@ Output:
 
 class ComplexSchema(BaseModel):
     corrected_markdown: str
+    @classmethod
+    def get_description(self):
+        return """{"corrected_markdown": "A string"}"""
