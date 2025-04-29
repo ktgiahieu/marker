@@ -176,5 +176,7 @@ Respond only with one of `Figure`, `Picture`, `ComplexRegion`, `Table`, or `Form
 class LayoutSchema(BaseModel):
     image_description: str
     label: str
+    
+    @classmethod
     def get_description(self):
         return """{"image_description": "A string", "label": "A string"}"""
