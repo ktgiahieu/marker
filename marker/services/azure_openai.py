@@ -211,10 +211,9 @@ class AzureOpenAIService(BaseService):
                         #             "HTTP-Referer": "https://github.com/VikParuchuri/marker", # Example header
                         #         },
                         #     )
-                    except BadRequestError as e:
+                    except Exception as e:
                         print(e)
-                        print(response_schema)
-                        if "json_schema" not in str(e) or response_schema.get("type") != "json_schema":
+                        if "'response_format' of type 'json_schema' is not supported with this model." not in str(e):
                             break
                         print("Json_schema not supported. Using JSON mode instead...")
                         json_schema_supported = False
@@ -233,10 +232,7 @@ class AzureOpenAIService(BaseService):
                                     "HTTP-Referer": "https://github.com/VikParuchuri/marker", # Example header
                                 },
                             )
-                    except Exception as e:
-                        print(e)
-                        print(response_schema)
-                        break
+
                 else:
                     response = client.beta.chat.completions.parse(
                         model=self.azure_deployment_name, # Specify the deployment name
