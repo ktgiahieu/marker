@@ -5,7 +5,7 @@ from io import BytesIO
 from typing import Annotated, List, Union
 
 # Import Azure client and specific errors from the openai library
-from openai import AzureOpenAI, APITimeoutError, RateLimitError
+from openai import AzureOpenAI, APITimeoutError, RateLimitError, BadRequestError
 import PIL
 from PIL import Image
 from pydantic import BaseModel
@@ -111,7 +111,6 @@ class AzureOpenAIService(BaseService):
         max_retries: int | None = None,
         timeout: int | None = None,
         max_tokens: int | None = None, # Max tokens for the completion
-        temperature: float | None = None, # Sampling temperature
     ) -> dict:
         """
         Makes a call to the configured Azure OpenAI deployment with the given
@@ -128,7 +127,6 @@ class AzureOpenAIService(BaseService):
             max_retries: Override the default max retries for this call.
             timeout: Override the default timeout for this call.
             max_tokens: Max tokens to generate in the response.
-            temperature: Controls randomness (0=deterministic, >0=more random).
 
         Returns:
             A dictionary representing the parsed and validated JSON response,
@@ -173,53 +171,93 @@ class AzureOpenAIService(BaseService):
             # {"role": "system", "content": "You are an AI assistant..."}
         ]
 
+        json_schema_supported = True
         # --- API Call with Retry Logic ---
         tries = 0
         while tries < current_max_retries:
             try:
-                # print(f"Attempt {tries + 1}/{current_max_retries}: Calling Azure OpenAI deployment '{self.azure_deployment_name}'...")
-                # Make the API call using the standard 'parse' method
-                if "o3" in self.azure_deployment_name or "o1" in self.azure_deployment_name:
+                if json_schema_supported:
+                    try:
+                        # print(f"Attempt {tries + 1}/{current_max_retries}: Calling Azure OpenAI deployment '{self.azure_deployment_name}'...")
+                        # Make the API call using the standard 'parse' method
+                        # if "o3" in self.azure_deployment_name or "o1" in self.azure_deployment_name:
+                        response = client.beta.chat.completions.parse(
+                            model=self.azure_deployment_name, # Specify the deployment name
+                            messages=messages,
+                            max_completion_tokens=max_tokens,
+                            # temperature=temperature,
+                            # Request JSON output explicitly. The model must support this.
+                            response_format=response_schema,#{"type": "json_object"},
+                            timeout=current_timeout,
+                            # Add custom headers if needed (e.g., for tracking)
+                            extra_headers={
+                                "X-Title": "Marker-Azure", # Example header
+                                "HTTP-Referer": "https://github.com/VikParuchuri/marker", # Example header
+                            },
+                        )
+
+                        # else:
+                        #     response = client.beta.chat.completions.parse(
+                        #         model=self.azure_deployment_name, # Specify the deployment name
+                        #         messages=messages,
+                        #         max_tokens=max_tokens,
+                        #         temperature=temperature,
+                        #         # Request JSON output explicitly. The model must support this.
+                        #         response_format=response_schema, #{"type": "json_object"},
+                        #         timeout=current_timeout,
+                        #         # Add custom headers if needed (e.g., for tracking)
+                        #         extra_headers={
+                        #             "X-Title": "Marker-Azure", # Example header
+                        #             "HTTP-Referer": "https://github.com/VikParuchuri/marker", # Example header
+                        #         },
+                        #     )
+                    except BadRequestError as e:
+                        if "json_schema" not in e or response_schema.get("type") != "json_schema":
+                            print(e)
+                            break
+                        print("Json_schema not supported. Using JSON mode instead...")
+                        json_schema_supported = False
+
+                        response = client.beta.chat.completions.parse(
+                                model=self.azure_deployment_name, # Specify the deployment name
+                                messages=messages,
+                                max_completion_tokens=max_tokens,
+                                # temperature=temperature,
+                                # Request JSON output explicitly. The model must support this.
+                                response_format={ "type": "json_object" }, #{"type": "json_object"},
+                                timeout=current_timeout,
+                                # Add custom headers if needed (e.g., for tracking)
+                                extra_headers={
+                                    "X-Title": "Marker-Azure", # Example header
+                                    "HTTP-Referer": "https://github.com/VikParuchuri/marker", # Example header
+                                },
+                            )
+                else:
                     response = client.beta.chat.completions.parse(
                         model=self.azure_deployment_name, # Specify the deployment name
                         messages=messages,
                         max_completion_tokens=max_tokens,
                         # temperature=temperature,
                         # Request JSON output explicitly. The model must support this.
-                        response_format=response_schema,#{"type": "json_object"},
+                        response_format={ "type": "json_object" }, #{"type": "json_object"},
                         timeout=current_timeout,
                         # Add custom headers if needed (e.g., for tracking)
                         extra_headers={
                             "X-Title": "Marker-Azure", # Example header
                             "HTTP-Referer": "https://github.com/VikParuchuri/marker", # Example header
                         },
-                    )
-
-                else:
-                    response = client.beta.chat.completions.parse(
-                        model=self.azure_deployment_name, # Specify the deployment name
-                        messages=messages,
-                        max_tokens=max_tokens,
-                        temperature=temperature,
-                        # Request JSON output explicitly. The model must support this.
-                        response_format=response_schema, #{"type": "json_object"},
-                        timeout=current_timeout,
-                        # Add custom headers if needed (e.g., for tracking)
-                        extra_headers={
-                            "X-Title": "Marker-Azure", # Example header
-                            "HTTP-Referer": "https://github.com/VikParuchuri/marker", # Example header
-                        },
-                    )
-
+                    ) 
                 # --- Process Successful Response ---
                 # Extract the response content (should be a JSON string)
                 response_content = response.choices[0].message.content
                 # Get token usage if available
-                total_tokens = response.usage.total_tokens if response.usage else 0
+                total_prompt_tokens = response.usage.prompt_tokens
+                total_completion_tokens = response.usage.completion_tokens
+                total_tokens = response.usage.total_tokens
 
                 # Update metadata (token count, request count)
                 block.update_metadata(llm_tokens_used=total_tokens, llm_request_count=1)
-                print(f"Azure API call successful. Tokens used: {total_tokens}")
+                print(f"Azure API call successful. Total tokens used: {total_tokens} (prompt: {total_prompt_tokens}, completion: {total_completion_tokens}).")
 
                 # Parse the JSON string and validate with the Pydantic schema
                 try:
