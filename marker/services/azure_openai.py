@@ -212,7 +212,7 @@ class AzureOpenAIService(BaseService):
                         #         },
                         #     )
                     except BadRequestError as e:
-                        if "json_schema" not in e or response_schema.get("type") != "json_schema":
+                        if "json_schema" not in str(e) or response_schema.get("type") != "json_schema":
                             print(e)
                             break
                         print("Json_schema not supported. Using JSON mode instead...")
@@ -309,7 +309,7 @@ class AzureOpenAIService(BaseService):
 
         # --- Return Empty Dict if all retries fail or an unrecoverable error occurred ---
         print("Failed to get a valid response after all retries or due to an error.")
-        block.update_metadata(llm_success=False) # Mark final status as failure
+        # block.update_metadata(llm_success=False) # Mark final status as failure
         return {}
 
     # --- Client Initialization Method ---
