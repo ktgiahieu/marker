@@ -172,6 +172,8 @@ class AzureOpenAIService(BaseService):
         ]
 
         json_schema_supported = True
+        if "Checklist-GPT-4o-0513" in self.azure_deployment_name:
+            json_schema_supported = False
         # --- API Call with Retry Logic ---
         tries = 0
         while tries < current_max_retries:
@@ -222,8 +224,6 @@ class AzureOpenAIService(BaseService):
                             for content in json_message["content"]:
                                 if content["type"] == "text":
                                     content["text"] = content["text"] + "\nReturn the output in JSON format:\n" + response_schema.get_description()
-                        print(response_schema.get_description())
-                        print(json_messages)
                         
                         response = client.beta.chat.completions.parse(
                                 model=self.azure_deployment_name, # Specify the deployment name
