@@ -176,3 +176,9 @@ Respond only with one of `Figure`, `Picture`, `ComplexRegion`, `Table`, or `Form
 class LayoutSchema(BaseModel):
     image_description: str
     label: str
+    def __repr__(self):
+        return """{"image_description": ...,
+    "label": ...}"""
+
+    def __str__(self):
+        return self.__repr__()
