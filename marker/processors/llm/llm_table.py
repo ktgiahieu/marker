@@ -282,3 +282,6 @@ No corrections needed.
 class TableSchema(BaseModel):
     comparison: str
     corrected_html: str
+    @classmethod
+    def get_description(self):
+        return """{"comparison": "A string", "corrected_html": "A string"}"""

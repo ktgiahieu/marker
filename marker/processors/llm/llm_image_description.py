@@ -78,3 +78,6 @@ In this figure, a bar chart titled "Fruit Preference Survey" is showing the numb
 
 class ImageSchema(BaseModel):
     image_description: str
+    @classmethod
+    def get_description(self):
+        return """{"image_description": "A string"}"""

@@ -126,3 +126,6 @@ analysis: The equations are not formatted as LaTeX, or enclosed in math tags.
 class EquationSchema(BaseModel):
     analysis: str
     corrected_equation: str
+    @classmethod
+    def get_description(self):
+        return """{"analysis": "A string", "corrected_equation": "A string"}"""

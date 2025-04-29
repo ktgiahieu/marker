@@ -196,3 +196,6 @@ Adversarial training <i>(AT)</i> <a href='#page-9-1'>[23]</a>, which aims to min
 class LLMTextSchema(BaseModel):
     analysis: str
     corrected_html: str
+    @classmethod
+    def get_description(self):
+        return """{"analysis": "A string", "corrected_html": "A string"}"""

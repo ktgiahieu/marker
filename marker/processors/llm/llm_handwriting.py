@@ -83,3 +83,6 @@ Formatting should be in markdown, with the following rules:
 
 class HandwritingSchema(BaseModel):
     markdown: str
+    @classmethod
+    def get_description(self):
+        return """{"markdown": "A string"}"""

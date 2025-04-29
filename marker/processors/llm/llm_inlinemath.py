@@ -176,3 +176,6 @@ analysis: The inline math in the lines is not in LaTeX format and is not surroun
 class LLMTextSchema(BaseModel):
     analysis: str
     corrected_lines: List[str]
+    @classmethod
+    def get_description(self):
+        return """{"analysis": "A string", "corrected_lines": ["A string"]}"""

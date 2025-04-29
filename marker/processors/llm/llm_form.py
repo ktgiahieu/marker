@@ -116,3 +116,6 @@ Comparison: The html representation has the labels in the first row and the valu
 class FormSchema(BaseModel):
     comparison: str
     corrected_html: str
+    @classmethod
+    def get_description(self):
+        return """{"comparison": "A string", "corrected_html": "A string"}"""

@@ -326,3 +326,6 @@ class MergeSchema(BaseModel):
     explanation: str
     merge: Literal["true", "false"]
     direction: Literal["bottom", "right"]
+    @classmethod
+    def get_description(self):
+        return """{"table1_description": "A string", "table2_description": "A string", "explanation": "A string", "merge": "A string", "direction": "A string"}"""
