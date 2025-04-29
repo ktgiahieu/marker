@@ -221,8 +221,8 @@ class AzureOpenAIService(BaseService):
                         for json_message in json_messages:
                             for content in json_message["content"]:
                                 if content["type"] == "text":
-                                    content["text"] = content["text"] + "\nReturn the output in JSON format:\n" + str(response_schema)
-                        print(str(response_schema))
+                                    content["text"] = content["text"] + "\nReturn the output in JSON format:\n" + response_schema.get_description()
+                        print(response_schema.get_description())
                         print(json_messages)
                         
                         response = client.beta.chat.completions.parse(
