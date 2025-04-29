@@ -62,6 +62,9 @@ analysis: The equations are not formatted as LaTeX, or enclosed in math tags.
 <p>And this equation is a bit more complex, and contains <math>ab \cdot x^{5}</math>:</p>
 <math display="block">\frac{ab \cdot x^{5} + x^{2} + 2 \cdot x + 123}{t}</math>
 ```
+If no corrections needed, always repeat the lines instead of stating "No corrections needed"
+
+
 **Input:**
 ```html
 {equation}

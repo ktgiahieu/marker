@@ -31,6 +31,7 @@ Formatting should be in markdown, with the following rules:
 **Instructions:**
 1. Carefully examine the provided block image.
 2. Output the markdown representing the content of the image.
+3. If no corrections needed, always repeat the lines instead of stating "No corrections needed"
 """
 
     def inference_blocks(self, document: Document) -> List[BlockData]:
