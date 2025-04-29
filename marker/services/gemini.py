@@ -61,6 +61,7 @@ class BaseGeminiService(BaseService):
                 )
                 output = responses.candidates[0].content.parts[0].text
                 total_tokens = responses.usage_metadata.total_token_count
+                print(f"Total tokens: {total_tokens}")
                 block.update_metadata(llm_tokens_used=total_tokens, llm_request_count=1)
                 return json.loads(output)
             except APIError as e:
