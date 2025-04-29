@@ -137,7 +137,7 @@ Respond only with the JSON schema, nothing else.  Do not include ```json, ```,  
                     model=self.claude_model_name,
                     messages=messages
                 )
-                input_token_count = token_count_response.json().get("input_tokens", 0)
+                input_token_count = json.loads(token_count_response.json()).get("input_tokens", 0)
                 print(f"Input tokens: {input_token_count}")
                 
                 return self.validate_response(response_text, response_schema)
