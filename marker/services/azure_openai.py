@@ -217,10 +217,12 @@ class AzureOpenAIService(BaseService):
                             break
                         print("Json_schema not supported. Using JSON mode instead...")
                         json_schema_supported = False
-
+                        print(messages)
+                        json_messages = messages.copy()
+                        json_messages[0]["content"] = json_messages[0]["content"] + "\nReturn the output in JSON format."
                         response = client.beta.chat.completions.parse(
                                 model=self.azure_deployment_name, # Specify the deployment name
-                                messages=messages,
+                                messages=json_messages,
                                 max_completion_tokens=max_tokens,
                                 # temperature=temperature,
                                 # Request JSON output explicitly. The model must support this.
@@ -234,9 +236,12 @@ class AzureOpenAIService(BaseService):
                             )
 
                 else:
+                    print(messages)
+                    json_messages = messages.copy()
+                    json_messages[0]["content"] = json_messages[0]["content"] + "\nReturn the output in JSON format."
                     response = client.beta.chat.completions.parse(
                         model=self.azure_deployment_name, # Specify the deployment name
-                        messages=messages,
+                        messages=json_messages,
                         max_completion_tokens=max_tokens,
                         # temperature=temperature,
                         # Request JSON output explicitly. The model must support this.
