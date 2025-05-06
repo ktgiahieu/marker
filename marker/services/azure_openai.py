@@ -183,21 +183,39 @@ class AzureOpenAIService(BaseService):
                     # Make the API call using the standard 'parse' method
                     # if "o3" in self.azure_deployment_name or "o1" in self.azure_deployment_name:
                     
-                    # stream = client.responses.create(
-                    #     model=self.azure_deployment_name,
-                    #     input=messages,
-                    #     # max_tokens=max_tokens,
-                    #     # response_format=response_schema,#{"type": "json_object"},
-                    #     # timeout=current_timeout,
-                    #     # # Add custom headers if needed (e.g., for tracking)
-                    #     # extra_headers={
-                    #     #     "X-Title": "Marker-Azure", # Example header
-                    #     #     "HTTP-Referer": "https://github.com/VikParuchuri/marker", # Example header
-                    #     # },
-                    #     stream=True,
-                    # )
-
+                    # Rewrite messages with "text" to "input_text"
                     
+                    new_messages = messages.copy()
+                    for message in new_messages:
+                        if message["role"] == "user":
+                            for content in message["content"]:
+                                if content["type"] == "text":
+                                    content["input_text"] = content
+                                    content["type"] = "input_text"
+                                    del content["text"]
+                                # elif content["type"] == "image_url":
+                                #     content["input_url"] = content
+                                #     content["type"] = "input_url"
+                                #     del content["image_url"]
+                    # messages = new_messages
+                    
+                    
+                    stream = client.responses.create(
+                        model=self.azure_deployment_name,
+                        input=messages,
+                        # max_tokens=max_tokens,
+                        # response_format=response_schema,#{"type": "json_object"},
+                        # timeout=current_timeout,
+                        # # Add custom headers if needed (e.g., for tracking)
+                        # extra_headers={
+                        #     "X-Title": "Marker-Azure", # Example header
+                        #     "HTTP-Referer": "https://github.com/VikParuchuri/marker", # Example header
+                        # },
+                        stream=True,
+                    )
+
+                    for event in stream:
+                        print(event)
                     
                     
                     
@@ -214,11 +232,7 @@ class AzureOpenAIService(BaseService):
                             "X-Title": "Marker-Azure", # Example header
                             "HTTP-Referer": "https://github.com/VikParuchuri/marker", # Example header
                         },
-                        stream=True,
                     )
-                    
-                    for event in response:
-                        print(event)
 
                 else:
                     json_messages = messages.copy()
