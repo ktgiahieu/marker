@@ -108,7 +108,7 @@ class AzureOpenAIService(BaseService):
         image: PIL.Image.Image | List[PIL.Image.Image],
         block: Block, # Assumes Block has an update_metadata method
         response_schema: type[BaseModel], # Pydantic model for expected JSON response
-        max_retries: int | None = None,
+        max_retries: int | None = 8,
         timeout: int | None = None,
         max_tokens: int | None = None, # Max tokens for the completion
     ) -> dict:
