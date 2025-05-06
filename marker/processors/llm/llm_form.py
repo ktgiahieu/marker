@@ -19,9 +19,9 @@ Values and labels should appear in html tables, with the labels on the left side
 1. Carefully examine the provided form block image.
 2. Analyze the html representation of the form.
 3. Compare the html representation to the image.
-4. If the html representation is correct, or you cannot read the image properly, then write "No corrections needed."
+4. If the html representation is correct, or you cannot read the image properly, generate the verbatim html representation.
 5. If the html representation contains errors, generate the corrected html representation.
-6. Output only either the corrected html representation or "No corrections needed."
+6. Output only either the corrected html representation.
 **Example:**
 Input:
 ```html

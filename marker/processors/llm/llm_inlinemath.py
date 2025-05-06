@@ -72,7 +72,6 @@ analysis: The inline math in the lines is not in LaTeX format and is not surroun
  ]
 }
 ```
-If no corrections needed, always repeat the lines instead of stating "No corrections needed"
 
 **Input:**
 ```json

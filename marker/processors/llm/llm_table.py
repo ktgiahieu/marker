@@ -54,9 +54,26 @@ Some guidelines:
 1. Carefully examine the provided text block image.
 2. Analyze the html representation of the table.
 3. Write a comparison of the image and the html representation, paying special attention to the column headers matching the correct column values.
-4. If the html representation is completely correct, or you cannot read the image properly, then write "No corrections needed."  If the html representation has errors, generate the corrected html representation.  Output only either the corrected html representation or "No corrections needed."
+4. If the html representation is completely correct, or you cannot read the image properly, generate the verbatim html representation.
+5. If the html representation has errors, generate the corrected html representation.
 **Example:**
 Input:
+```html
+<table>
+    <tr>
+        <th>First Name</t>
+        <th>Last Name</th>
+        <th>Age</th>
+    </tr>
+    <tr>
+        <td>John</td>
+        <td>Doe</td>
+        <td>25</td>
+    </tr>
+</table>
+```
+Output:
+comparison: The image shows a table with 2 rows and 3 columns. There is a typo in "</t>" which should be "</th>".
 ```html
 <table>
     <tr>
@@ -70,11 +87,6 @@ Input:
         <td>25</td>
     </tr>
 </table>
-```
-Output:
-comparison: The image shows a table with 2 rows and 3 columns.  The text and formatting of the html table matches the image.  The column headers match the correct column values.
-```html
-No corrections needed.
 ```
 **Input:**
 ```html
@@ -155,7 +167,7 @@ No corrections needed.
             batch_image = self.handle_image_rotation(batch_cells, batch_image)
             batch_parsed_cells = self.rewrite_single_chunk(page, block, block_html, batch_cells, batch_image)
             if batch_parsed_cells is None:
-                return # Error occurred or no corrections needed
+                return # Error occurred
 
             for cell in batch_parsed_cells:
                 cell.row_id += row_shift

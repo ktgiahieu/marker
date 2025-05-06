@@ -41,7 +41,7 @@ Your task is to correct any errors in the extracted text, including math, format
 2. Analyze the text that has been extracted from the block.
 3. Compare the extracted text to the corresponding text in the image.
 4. Write a short analysis of the text block, including any errors you see in the extracted text.
-5. If there are no errors in any of the extracted text, output "No corrections needed".
+5. If there are no errors in any of the extracted text, output the verbatim text in the intended format.
 6. Correct any errors in the extracted text, including:
     * Inline math: Ensure all mathematical expressions are correctly formatted and rendered.  Surround them with <math>...</math> tags.  The math expressions should be rendered in simple, concise, KaTeX-compatible LaTeX.  Do not use $ or $$ as delimiters.
     * If a math expression is not in LaTeX format, convert it to LaTeX format, and surround it with <math>...</math> tags.
@@ -66,7 +66,6 @@ analysis: The inline math is not in LaTeX format and is not surrounded by <math>
 ```html
 Adversarial training <i>(AT)</i> <a href='#page-9-1'>[23]</a>, which aims to minimize the model's risk under the worst-case perturbations, is currently the most effective approach for improving the robustness of deep neural networks. For a given neural network <math>f(x, w)</math> with parameters <math>w</math>, the optimization objective of AT can be formulated as follows:
 ```
-If no corrections needed, always repeat the lines instead of stating "No corrections needed"
 
 **Input:**
 ```html

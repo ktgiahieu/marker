@@ -41,9 +41,9 @@ Some guidelines:
 1. Carefully examine the provided image.
 2. Analyze the existing html, which may include LaTeX code.
 3. Write a short analysis of how the html should be corrected to represent the image.
-4. If the html and LaTeX are correct, write "No corrections needed."
+4. If the html and LaTeX are correct, generate the verbatim text of the html.
 5. If the html and LaTeX are incorrect, generate the corrected html.
-6. Output only the analysis, then the corrected html or "No corrections needed."
+6. Output only the analysis, then the corrected html.
 **Example:**
 Input:
 ```html
@@ -62,8 +62,6 @@ analysis: The equations are not formatted as LaTeX, or enclosed in math tags.
 <p>And this equation is a bit more complex, and contains <math>ab \cdot x^{5}</math>:</p>
 <math display="block">\frac{ab \cdot x^{5} + x^{2} + 2 \cdot x + 123}{t}</math>
 ```
-If no corrections needed, always repeat the lines instead of stating "No corrections needed"
-
 
 **Input:**
 ```html

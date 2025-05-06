@@ -255,9 +255,6 @@ class AzureOpenAIService(BaseService):
             # --- Handle Retriable Errors ---
             except (APITimeoutError, RateLimitError) as e:
                 tries += 1
-                print(f"Error: {type(e).__name__}: {e}")
-                print(f"Retrying... (Attempt {tries}/{current_max_retries})")
-                print(messages)
                 # block.update_metadata(llm_request_count=1, llm_error=type(e).__name__) # Record error type
                 if tries >= current_max_retries:
                     print(f"Error: Max retries ({current_max_retries}) reached after {type(e).__name__}. Aborting.")
