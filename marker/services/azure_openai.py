@@ -308,6 +308,9 @@ class AzureOpenAIService(BaseService):
                     f"Error: {type(e).__name__}: {e}. Retrying in {wait_time} seconds... (Attempt {tries}/{current_max_retries})"
                 )
                 time.sleep(wait_time)
+                
+                # Increase max_tokens
+                max_tokens = 16000
                 # Continue to the next iteration of the while loop
 
             # --- Handle Other Non-Retriable API Errors ---
