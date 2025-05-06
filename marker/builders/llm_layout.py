@@ -40,7 +40,7 @@ class LLMLayoutBuilder(LayoutBuilder):
     max_concurrency: Annotated[
         int,
         "The maximum number of concurrent requests to make to the Gemini model.",
-    ] = 10
+    ] = 40
     disable_tqdm: Annotated[
         bool,
         "Whether to disable the tqdm progress bar.",
