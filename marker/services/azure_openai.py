@@ -109,7 +109,7 @@ class AzureOpenAIService(BaseService):
         block: Block, # Assumes Block has an update_metadata method
         response_schema: type[BaseModel], # Pydantic model for expected JSON response
         max_retries: int | None = 12,
-        timeout: int | None = 60,
+        timeout: int | None = None,
         max_tokens: int | None = None, # Max tokens for the completion
     ) -> dict:
         """
@@ -137,6 +137,8 @@ class AzureOpenAIService(BaseService):
         # Set effective retries and timeout
         current_max_retries = max_retries if max_retries is not None else self.max_retries
         current_timeout = timeout if timeout is not None else self.timeout
+        if "o4" in self.azure_deployment_name:
+            current_timeout = 120
 
         # Ensure image is a list
         if not isinstance(image, list):
@@ -301,7 +303,7 @@ class AzureOpenAIService(BaseService):
                     break # Exit loop
                 # Exponential backoff: wait 2^tries seconds (2, 4, 8, ...)
                 wait_time = (2 ** tries)
-                current_timeout = current_timeout * tries
+                current_timeout = current_timeout * (tries + 1) # Exponential backoff
                 print(
                     f"Error: {type(e).__name__}: {e}. Retrying in {wait_time} seconds... (Attempt {tries}/{current_max_retries})"
                 )
