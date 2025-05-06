@@ -254,6 +254,9 @@ class AzureOpenAIService(BaseService):
                             "HTTP-Referer": "https://github.com/VikParuchuri/marker", # Example header
                         },
                     ) 
+                    
+                print(response)
+    
                 # --- Process Successful Response ---
                 # Extract the response content (should be a JSON string)
                 response_content = response.choices[0].message.content
