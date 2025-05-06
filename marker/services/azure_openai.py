@@ -186,13 +186,11 @@ class AzureOpenAIService(BaseService):
                     # Rewrite messages with "text" to "input_text"
                     
                     new_messages = messages.copy()
-                    for message in new_messages:
+                    for i, message in enumerate(new_messages):
                         if message["role"] == "user":
-                            for content in message["content"]:
+                            for j, content in enumerate(message["content"]):
                                 if content["type"] == "text":
-                                    content["input_text"] = content
-                                    content["type"] = "input_text"
-                                    del content["text"]
+                                    new_messages[i]["content"][j] = {"type": "input_text", "text": content["text"]}
                                 # elif content["type"] == "image_url":
                                 #     content["input_url"] = content
                                 #     content["type"] = "input_url"
@@ -202,7 +200,7 @@ class AzureOpenAIService(BaseService):
                     
                     stream = client.responses.create(
                         model=self.azure_deployment_name,
-                        input=messages,
+                        input=new_messages,
                         # max_tokens=max_tokens,
                         # response_format=response_schema,#{"type": "json_object"},
                         # timeout=current_timeout,
