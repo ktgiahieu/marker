@@ -109,7 +109,7 @@ class AzureOpenAIService(BaseService):
         block: Block, # Assumes Block has an update_metadata method
         response_schema: type[BaseModel], # Pydantic model for expected JSON response
         max_retries: int | None = 12,
-        timeout: int | None = None,
+        timeout: int | None = 60,
         max_tokens: int | None = None, # Max tokens for the completion
     ) -> dict:
         """
@@ -256,7 +256,7 @@ class AzureOpenAIService(BaseService):
                     ) 
                     
                 print(response)
-    
+
                 # --- Process Successful Response ---
                 # Extract the response content (should be a JSON string)
                 response_content = response.choices[0].message.content
@@ -301,13 +301,17 @@ class AzureOpenAIService(BaseService):
                     break # Exit loop
                 # Exponential backoff: wait 2^tries seconds (2, 4, 8, ...)
                 wait_time = (2 ** tries)
+                current_timeout = current_timeout * tries
                 print(
                     f"Error: {type(e).__name__}: {e}. Retrying in {wait_time} seconds... (Attempt {tries}/{current_max_retries})"
                 )
                 time.sleep(wait_time)
                 
                 # Increase max_tokens
-                max_tokens = 16000
+                if "GPT-4" in self.azure_deployment_name:
+                    max_tokens = 16000
+                else:
+                    max_tokens = 50000
                 # Continue to the next iteration of the while loop
 
             # --- Handle Other Non-Retriable API Errors ---
