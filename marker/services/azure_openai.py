@@ -192,7 +192,7 @@ class AzureOpenAIService(BaseService):
                                 if content["type"] == "text":
                                     new_messages[i]["content"][j] = {"type": "input_text", "text": content["text"]}
                                 elif content["type"] == "image_url":
-                                    new_messages[i]["content"][j] = {"type": "input_image", "url": content["image_url"]["url"]}
+                                    new_messages[i]["content"][j] = {"type": "input_image", "image": content["image_url"]["url"]}
 
                                 #     content["input_url"] = content
                                 #     content["type"] = "input_url"
