@@ -191,7 +191,9 @@ class AzureOpenAIService(BaseService):
                             for j, content in enumerate(message["content"]):
                                 if content["type"] == "text":
                                     new_messages[i]["content"][j] = {"type": "input_text", "text": content["text"]}
-                                # elif content["type"] == "image_url":
+                                elif content["type"] == "image_url":
+                                    new_messages[i]["content"][j] = {"type": "input_image", "url": content["image_url"]["url"]}
+
                                 #     content["input_url"] = content
                                 #     content["type"] = "input_url"
                                 #     del content["image_url"]
