@@ -186,7 +186,7 @@ class AzureOpenAIService(BaseService):
                     stream = client.responses.create(
                         model=self.azure_deployment_name,
                         input=messages,
-                        max_tokens=max_tokens,
+                        # max_tokens=max_tokens,
                         # response_format=response_schema,#{"type": "json_object"},
                         # timeout=current_timeout,
                         # # Add custom headers if needed (e.g., for tracking)
