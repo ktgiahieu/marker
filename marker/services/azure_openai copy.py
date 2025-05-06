@@ -179,23 +179,66 @@ class AzureOpenAIService(BaseService):
         while tries < current_max_retries:
             try:
                 if json_schema_supported:
-                    # print(f"Attempt {tries + 1}/{current_max_retries}: Calling Azure OpenAI deployment '{self.azure_deployment_name}'...")
-                    # Make the API call using the standard 'parse' method
-                    # if "o3" in self.azure_deployment_name or "o1" in self.azure_deployment_name:
-                    response = client.beta.chat.completions.parse(
-                        model=self.azure_deployment_name, # Specify the deployment name
-                        messages=messages,
-                        max_completion_tokens=max_tokens,
-                        # temperature=temperature,
-                        # Request JSON output explicitly. The model must support this.
-                        response_format=response_schema,#{"type": "json_object"},
-                        timeout=current_timeout,
-                        # Add custom headers if needed (e.g., for tracking)
-                        extra_headers={
-                            "X-Title": "Marker-Azure", # Example header
-                            "HTTP-Referer": "https://github.com/VikParuchuri/marker", # Example header
-                        },
-                    )
+                    try:
+                        # print(f"Attempt {tries + 1}/{current_max_retries}: Calling Azure OpenAI deployment '{self.azure_deployment_name}'...")
+                        # Make the API call using the standard 'parse' method
+                        # if "o3" in self.azure_deployment_name or "o1" in self.azure_deployment_name:
+                        response = client.beta.chat.completions.parse(
+                            model=self.azure_deployment_name, # Specify the deployment name
+                            messages=messages,
+                            max_completion_tokens=max_tokens,
+                            # temperature=temperature,
+                            # Request JSON output explicitly. The model must support this.
+                            response_format=response_schema,#{"type": "json_object"},
+                            timeout=current_timeout,
+                            # Add custom headers if needed (e.g., for tracking)
+                            extra_headers={
+                                "X-Title": "Marker-Azure", # Example header
+                                "HTTP-Referer": "https://github.com/VikParuchuri/marker", # Example header
+                            },
+                        )
+
+                        # else:
+                        #     response = client.beta.chat.completions.parse(
+                        #         model=self.azure_deployment_name, # Specify the deployment name
+                        #         messages=messages,
+                        #         max_tokens=max_tokens,
+                        #         temperature=temperature,
+                        #         # Request JSON output explicitly. The model must support this.
+                        #         response_format=response_schema, #{"type": "json_object"},
+                        #         timeout=current_timeout,
+                        #         # Add custom headers if needed (e.g., for tracking)
+                        #         extra_headers={
+                        #             "X-Title": "Marker-Azure", # Example header
+                        #             "HTTP-Referer": "https://github.com/VikParuchuri/marker", # Example header
+                        #         },
+                        #     )
+                    except Exception as e:
+                        print(e)
+                        if "'response_format' of type 'json_schema' is not supported with this model." not in str(e):
+                            break
+                        print("Json_schema not supported. Using JSON mode instead...")
+                        json_schema_supported = False
+                        json_messages = messages.copy()
+                        for json_message in json_messages:
+                            for content in json_message["content"]:
+                                if content["type"] == "text":
+                                    content["text"] = content["text"] + "\nReturn the output in JSON format:\n" + response_schema.get_description()
+                        
+                        response = client.beta.chat.completions.parse(
+                                model=self.azure_deployment_name, # Specify the deployment name
+                                messages=json_messages,
+                                max_completion_tokens=max_tokens,
+                                # temperature=temperature,
+                                # Request JSON output explicitly. The model must support this.
+                                response_format={ "type": "json_object" }, #{"type": "json_object"},
+                                timeout=current_timeout,
+                                # Add custom headers if needed (e.g., for tracking)
+                                extra_headers={
+                                    "X-Title": "Marker-Azure", # Example header
+                                    "HTTP-Referer": "https://github.com/VikParuchuri/marker", # Example header
+                                },
+                            )
 
                 else:
                     json_messages = messages.copy()
@@ -255,9 +298,6 @@ class AzureOpenAIService(BaseService):
             # --- Handle Retriable Errors ---
             except (APITimeoutError, RateLimitError) as e:
                 tries += 1
-                print(f"Error: {type(e).__name__}: {e}")
-                print(f"Retrying... (Attempt {tries}/{current_max_retries})")
-                print(messages)
                 # block.update_metadata(llm_request_count=1, llm_error=type(e).__name__) # Record error type
                 if tries >= current_max_retries:
                     print(f"Error: Max retries ({current_max_retries}) reached after {type(e).__name__}. Aborting.")
