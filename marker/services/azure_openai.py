@@ -138,7 +138,7 @@ class AzureOpenAIService(BaseService):
         current_max_retries = max_retries if max_retries is not None else self.max_retries
         current_timeout = timeout if timeout is not None else self.timeout
         if "o4" in self.azure_deployment_name:
-            current_timeout = 120
+            current_timeout = 240
 
         # Ensure image is a list
         if not isinstance(image, list):
