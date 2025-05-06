@@ -185,14 +185,14 @@ class AzureOpenAIService(BaseService):
                     
                     # Rewrite messages with "text" to "input_text"
                     
-                    new_messages = messages.copy()
-                    for i, message in enumerate(new_messages):
-                        if message["role"] == "user":
-                            for j, content in enumerate(message["content"]):
-                                if content["type"] == "text":
-                                    new_messages[i]["content"][j] = {"type": "input_text", "text": content["text"]}
-                                elif content["type"] == "image_url":
-                                    new_messages[i]["content"][j] = {"type": "input_image", "image_url": content["image_url"]["url"]}
+                    # new_messages = messages.copy()
+                    # for i, message in enumerate(new_messages):
+                    #     if message["role"] == "user":
+                    #         for j, content in enumerate(message["content"]):
+                    #             if content["type"] == "text":
+                    #                 new_messages[i]["content"][j] = {"type": "input_text", "text": content["text"]}
+                    #             elif content["type"] == "image_url":
+                    #                 new_messages[i]["content"][j] = {"type": "input_image", "image_url": content["image_url"]["url"]}
 
                                 #     content["input_url"] = content
                                 #     content["type"] = "input_url"
@@ -200,22 +200,22 @@ class AzureOpenAIService(BaseService):
                     # messages = new_messages
                     
                     
-                    stream = client.responses.create(
-                        model=self.azure_deployment_name,
-                        input=new_messages,
-                        # max_tokens=max_tokens,
-                        # response_format=response_schema,#{"type": "json_object"},
-                        # timeout=current_timeout,
-                        # # Add custom headers if needed (e.g., for tracking)
-                        # extra_headers={
-                        #     "X-Title": "Marker-Azure", # Example header
-                        #     "HTTP-Referer": "https://github.com/VikParuchuri/marker", # Example header
-                        # },
-                        stream=True,
-                    )
+                    # stream = client.responses.create(
+                    #     model=self.azure_deployment_name,
+                    #     input=new_messages,
+                    #     # max_tokens=max_tokens,
+                    #     # response_format=response_schema,#{"type": "json_object"},
+                    #     # timeout=current_timeout,
+                    #     # # Add custom headers if needed (e.g., for tracking)
+                    #     # extra_headers={
+                    #     #     "X-Title": "Marker-Azure", # Example header
+                    #     #     "HTTP-Referer": "https://github.com/VikParuchuri/marker", # Example header
+                    #     # },
+                    #     stream=True,
+                    # )
 
-                    for event in stream:
-                        print(event)
+                    # for event in stream:
+                    #     print(event)
                     
                     
                     
